@@ -1,8 +1,22 @@
-import { ajouterListeAvis } from "./avis.js";
+import { ajouterListeAvis, ajouterAvisUtilisateur, afficherAvis } from "./avis.js";
 
-// Récupération des pièces depuis le fichier JSON
-const reponse = await fetch("http://localhost:8081/pieces/");
-const pieces = await reponse.json();
+// Récupération des données dans le localStorage
+let pieces = window.localStorage.getItem("pieces");
+
+if (pieces === null){
+    // Récupération des pièces depuis le fichier JSON
+    const reponse = await fetch("http://localhost:8081/pieces/");
+    pieces = await reponse.json();
+
+    const valeursPieces = JSON.stringify(pieces);
+
+    // stockage des information dans le localStorage
+    window.localStorage.setItem("pieces", valeursPieces);
+}else {
+    pieces = JSON.parse(pieces);
+}
+
+ajouterAvisUtilisateur();
 
 // création des balises HTML
 function genererPiece(pieces) {
@@ -31,7 +45,7 @@ function genererPiece(pieces) {
 
         const buttonAvis = document.createElement("button");
         buttonAvis.dataset.id = piece.id;
-        buttonAvis.textContent = "voir les avis";
+        buttonAvis.textContent = "Afficher les avis";
 
         // Rattachement de nos éléments au DOM
 
@@ -50,6 +64,17 @@ function genererPiece(pieces) {
 }
 
 genererPiece(pieces);
+
+pieces.forEach((items) => {
+    const id = items.id;
+    const avisJSON = window.localStorage.getItem(`avis-pieces-${id}`);
+    const avis = JSON.parse(avisJSON);
+
+    if(avis !== null){
+        const articleElement = document.querySelector(`article[data-id="${id}"]`);
+        afficherAvis(articleElement, avis)
+    }
+});
 
 // Gestion des boutton
 const btnTrier = document.querySelector(".btn-trier");
@@ -98,10 +123,15 @@ InputPixMax.addEventListener('input', () => {
     const piecesPixMax = pieces.filter(piece => piece.prix <= InputPixMax.value); 
     document.querySelector(".fiches").innerHTML = "";
     genererPiece(piecesPixMax)
-})
+});
 
 const btnAnnuler = document.querySelector(".btn-annuler");
 btnAnnuler.addEventListener('click', () => {
     document.querySelector(".fiches").innerHTML = "";
     genererPiece(pieces);
-})
+});
+
+const btnMisaJour = document.querySelector(".btn-maj");
+btnMisaJour.addEventListener('click', () => {
+    window.localStorage.removeItem("pieces");
+});
