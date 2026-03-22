@@ -44,3 +44,36 @@ export function ajouterAvisUtilisateur() {
 
     })
 }
+
+export async function afficherGraphiqueAvis() {
+    const reponse = await fetch("http://localhost:8081/avis");
+    const avis = await reponse.json();
+    const nb_commentaire = [0, 0, 0, 0, 0];
+
+    avis.forEach((commentaire) => {
+        nb_commentaire[commentaire.nbEtoiles - 1]++;
+    });
+
+    const labels = ["5", "4", "3", "2", "1", ]
+    const data = {
+        labels: labels,
+        datasets: [{
+            label: "Etoiles attribuées",
+            data: nb_commentaire.reverse(),
+            backgroundColor: "rgba(255, 230, 0, 1)",
+        }],
+    };
+    
+    const config = {
+        type: "bar",
+        data: data,
+        options: {
+            indexAxis: "y",
+        },
+    };
+
+    const graphiqueAvis = new Chart(
+        document.querySelector("#myChart"),
+        config,
+    );
+}

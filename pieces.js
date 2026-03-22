@@ -1,4 +1,4 @@
-import { ajouterListeAvis, ajouterAvisUtilisateur, afficherAvis } from "./avis.js";
+import { ajouterListeAvis, ajouterAvisUtilisateur, afficherAvis, afficherGraphiqueAvis } from "./avis.js";
 
 // Récupération des données dans le localStorage
 let pieces = window.localStorage.getItem("pieces");
@@ -135,3 +135,5 @@ const btnMisaJour = document.querySelector(".btn-maj");
 btnMisaJour.addEventListener('click', () => {
     window.localStorage.removeItem("pieces");
 });
+
+await afficherGraphiqueAvis();
